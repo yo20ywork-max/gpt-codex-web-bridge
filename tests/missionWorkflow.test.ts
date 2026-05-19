@@ -169,6 +169,75 @@ describe("mock mission workflow", () => {
     }
   });
 
+  it("blocks requireRealCodex missions when mock mode is enabled", async () => {
+    const fixture = await createGitRepo();
+    try {
+      process.env.GCB_MOCK_CODEX = "1";
+      process.env.GCB_MOCK_SCENARIO = "success";
+      const service = MissionService.create(fixture.storagePath);
+      const start = await service.startMission({
+        repoPath: fixture.repoPath,
+        goal: "Require real Codex",
+        testCommand: "npm test",
+        maxLoops: 2,
+        requireRealCodex: true
+      });
+      const missionId = String(start.missionId);
+
+      expect(start).toMatchObject({
+        status: "blocked",
+        codexMode: "mock",
+        blockReason: "real_codex_required_but_mock_enabled",
+        workerStarted: false
+      });
+      expect(start.currentLoop).toBe(0);
+
+      const report = await service.getMissionReport(missionId);
+      expect(String(report.markdown)).toContain("## Codex Mode");
+      expect(String(report.markdown)).toContain("- mock");
+      expect(String(report.markdown)).toContain("Blocked before Codex ran");
+    } finally {
+      await cleanupTempDir(fixture.root);
+    }
+  });
+
+  it("allows requireRealCodex missions in real mode with a mocked runner", async () => {
+    const fixture = await createGitRepo();
+    try {
+      delete process.env.GCB_MOCK_CODEX;
+      delete process.env.GCB_MOCK_SCENARIO;
+
+      const store = new MissionStore(fixture.storagePath);
+      const runner = new VerificationPauseRunner();
+      const worker = new MissionWorker(store, runner);
+      const manager = new MissionWorkerManager(worker);
+      const service = new MissionService(store, runner, manager);
+
+      const start = await service.startMission({
+        repoPath: fixture.repoPath,
+        goal: "Require real Codex with fake unit runner",
+        testCommand: "npm test",
+        maxLoops: 2,
+        requireRealCodex: true
+      });
+      const missionId = String(start.missionId);
+      expect(start).toMatchObject({ codexMode: "real", workerStarted: true });
+
+      await service.waitForMission(missionId);
+      const status = await service.getMissionStatus(missionId);
+      const report = await service.getMissionReport(missionId);
+      expect(status).toMatchObject({
+        status: "completed",
+        codexMode: "real",
+        lastValidation: { status: "passed" }
+      });
+      expect(String(report.markdown)).toContain("## Codex Mode");
+      expect(String(report.markdown)).toContain("- real");
+    } finally {
+      await cleanupTempDir(fixture.root);
+    }
+  });
+
   it("requests native resume for a repair loop even when no session id was parsed", async () => {
     const fixture = await createGitRepo({
       packageJson: {

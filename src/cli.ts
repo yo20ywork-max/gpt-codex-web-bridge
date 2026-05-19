@@ -50,7 +50,8 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
       lintCommand: stringOption(parsed, "lint"),
       maxLoops: numberOption(parsed, "maxLoops") ?? numberOption(parsed, "max-loops") ?? 12,
       autoContinue: !booleanOption(parsed, "no-auto-continue"),
-      allowEnvRead: booleanOption(parsed, "allow-env-read")
+      allowEnvRead: booleanOption(parsed, "allow-env-read"),
+      requireRealCodex: booleanOption(parsed, "require-real-codex")
     });
     printJson(result);
     return;
@@ -320,7 +321,7 @@ function printJson(value: unknown): void {
 function printHelp(): void {
   console.log(`gcb commands:
   gcb serve
-  gcb start --repo <path> --goal "<goal>" [--test "npm test"] [--lint "npm run lint"]
+  gcb start --repo <path> --goal "<goal>" [--test "npm test"] [--lint "npm run lint"] [--require-real-codex]
   gcb continue [missionId]
   gcb pause <missionId>
   gcb status [missionId]
