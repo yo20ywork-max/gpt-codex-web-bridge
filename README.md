@@ -46,8 +46,9 @@ report: .gpt-codex-web-bridge/missions/<missionId>/report.md
 - ChatGPT Web connector creation: Verified by [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
 - ChatGPT Web `list_missions`: Verified.
 - ChatGPT Web mock `start_mission`: Verified by mission `m_mpd37io2_033c3cbe`.
+- Local mock `continue_mission` pause/resume: Verified by `npm.cmd test` with `GCB_MOCK_SCENARIO=rate_limit_then_success`.
+- ChatGPT Web `continue_mission`: Verified by mission `m_mpd5kp4z_b3257f96`; transcript in [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md).
 - ChatGPT Web real Codex mission: Not yet verified.
-- ChatGPT Web `continue_mission`: Not yet verified.
 
 Full matrix: [`docs/VERIFICATION_MATRIX.md`](docs/VERIFICATION_MATRIX.md)
 
@@ -123,6 +124,8 @@ This MVP is a No Authentication MCP connector. If ChatGPT shows `OAuth client no
 If ChatGPT asks for tool-call approval, approve bridge tool calls only for repositories you own and intend to modify.
 
 For the full manual checklist and transcript template, see [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
+
+For the ChatGPT Web `continue_mission` pause/resume checklist, see [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md).
 
 ## ChatGPT Web Prompt
 
@@ -336,6 +339,7 @@ See:
 - [`examples/transcripts/real-codex-smoke-test.txt`](examples/transcripts/real-codex-smoke-test.txt)
 - [`examples/transcripts/real-codex-resume-test.txt`](examples/transcripts/real-codex-resume-test.txt)
 - [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt)
+- [`examples/transcripts/chatgpt-web-continue-mission-test.txt`](examples/transcripts/chatgpt-web-continue-mission-test.txt)
 
 ## Project Docs
 
@@ -343,6 +347,7 @@ See:
 - [`docs/REAL_CODEX_RUN_TRANSCRIPT.md`](docs/REAL_CODEX_RUN_TRANSCRIPT.md)
 - [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md)
 - [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md)
+- [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md)
 - [`docs/REAL_CODEX_SMOKE_TEST.md`](docs/REAL_CODEX_SMOKE_TEST.md)
 - [`docs/CHATGPT_WEB_CONNECTION_TEST.md`](docs/CHATGPT_WEB_CONNECTION_TEST.md)
 - [`docs/MCP_INSPECTOR_TEST.md`](docs/MCP_INSPECTOR_TEST.md)

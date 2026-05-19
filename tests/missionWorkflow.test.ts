@@ -131,6 +131,44 @@ describe("mock mission workflow", () => {
     }
   });
 
+  it("resumes a mock rate-limit pause through the service layer without missionId", async () => {
+    const fixture = await createGitRepo();
+    try {
+      process.env.GCB_MOCK_CODEX = "1";
+      process.env.GCB_MOCK_SCENARIO = "rate_limit_then_success";
+      const service = MissionService.create(fixture.storagePath);
+      const start = await service.startMission({
+        repoPath: fixture.repoPath,
+        goal: "ChatGPT Web continue_mission mock pause/resume",
+        testCommand: "npm test",
+        maxLoops: 4,
+        allowEnvRead: false,
+        autoContinue: true
+      });
+      const missionId = String(start.missionId);
+      await service.waitForMission(missionId);
+
+      const paused = await service.getMissionStatus(missionId);
+      expect(paused.status).toBe("paused");
+      expect(paused.pauseReason).toBe("rate_limit_or_quota");
+      expect(paused.currentLoop).toBe(1);
+      expect(paused.lastValidation).toMatchObject({ status: "not_run" });
+
+      const continued = await service.continueMission({});
+      expect(continued.missionId).toBe(missionId);
+      expect(continued.workerStarted).toBe(true);
+      await service.waitForMission(missionId);
+
+      const completed = await service.getMissionStatus(missionId);
+      expect(completed.status).toBe("completed");
+      expect(completed.currentLoop).toBe(2);
+      expect(completed.lastValidation).toMatchObject({ status: "passed" });
+      expect(completed.nextRecommendedAction).toBe("Review the branch and merge manually when satisfied.");
+    } finally {
+      await cleanupTempDir(fixture.root);
+    }
+  });
+
   it("requests native resume for a repair loop even when no session id was parsed", async () => {
     const fixture = await createGitRepo({
       packageJson: {
