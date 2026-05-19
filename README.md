@@ -40,6 +40,8 @@ report: .gpt-codex-web-bridge/missions/<missionId>/report.md
 
 ## Verification Status
 
+Verified:
+
 - Build/tests/mock-demo: Verified by `npm.cmd run build`, `npm.cmd test`, and `npm.cmd run verify:mock`.
 - Real Codex CLI mission: Verified by [`docs/REAL_CODEX_RUN_TRANSCRIPT.md`](docs/REAL_CODEX_RUN_TRANSCRIPT.md).
 - Real Codex CLI resume: Verified by [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md).
@@ -48,7 +50,10 @@ report: .gpt-codex-web-bridge/missions/<missionId>/report.md
 - ChatGPT Web mock `start_mission`: Verified by mission `m_mpd37io2_033c3cbe`.
 - Local mock `continue_mission` pause/resume: Verified by `npm.cmd test` with `GCB_MOCK_SCENARIO=rate_limit_then_success`.
 - ChatGPT Web `continue_mission`: Verified by mission `m_mpd5kp4z_b3257f96`; transcript in [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md).
-- ChatGPT Web real Codex mission: Not yet verified.
+
+Not yet verified:
+
+- ChatGPT Web -> real Codex CLI full end-to-end mission. Manual verification package: [`docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md`](docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md).
 
 Full matrix: [`docs/VERIFICATION_MATRIX.md`](docs/VERIFICATION_MATRIX.md)
 
@@ -126,6 +131,8 @@ If ChatGPT asks for tool-call approval, approve bridge tool calls only for repos
 For the full manual checklist and transcript template, see [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
 
 For the ChatGPT Web `continue_mission` pause/resume checklist, see [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md).
+
+For the ChatGPT Web -> real Codex CLI E2E checklist, see [`docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md`](docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md).
 
 ## ChatGPT Web Prompt
 
@@ -340,6 +347,7 @@ See:
 - [`examples/transcripts/real-codex-resume-test.txt`](examples/transcripts/real-codex-resume-test.txt)
 - [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt)
 - [`examples/transcripts/chatgpt-web-continue-mission-test.txt`](examples/transcripts/chatgpt-web-continue-mission-test.txt)
+- [`examples/transcripts/chatgpt-web-real-codex-e2e-test.txt`](examples/transcripts/chatgpt-web-real-codex-e2e-test.txt)
 
 ## Project Docs
 
@@ -348,6 +356,7 @@ See:
 - [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md)
 - [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md)
 - [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md)
+- [`docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md`](docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md)
 - [`docs/REAL_CODEX_SMOKE_TEST.md`](docs/REAL_CODEX_SMOKE_TEST.md)
 - [`docs/CHATGPT_WEB_CONNECTION_TEST.md`](docs/CHATGPT_WEB_CONNECTION_TEST.md)
 - [`docs/MCP_INSPECTOR_TEST.md`](docs/MCP_INSPECTOR_TEST.md)

@@ -1,0 +1,107 @@
+Template until replaced with real ChatGPT Web -> real Codex CLI evidence.
+
+Do not treat this file as proof of a successful run. It is a paste target for the manual verification transcript.
+
+Setup commands:
+
+```powershell
+cd C:\gpt-codex-web-bridge
+git checkout main
+git pull origin main
+npm.cmd ci
+npm.cmd run build
+npm.cmd test
+npm.cmd run create:chatgpt-real-codex-target
+Remove-Item Env:\GCB_MOCK_CODEX -ErrorAction SilentlyContinue
+Remove-Item Env:\GCB_MOCK_SCENARIO -ErrorAction SilentlyContinue
+npm.cmd run serve:real-codex
+```
+
+Tunnel command, in another PowerShell:
+
+```powershell
+ngrok http 8787
+```
+
+Connector URL:
+
+```text
+https://<fresh-ngrok-host>/mcp
+```
+
+ChatGPT prompt:
+
+```text
+請使用 gpt-codex-web-bridge 啟動一個 real Codex CLI end-to-end 驗證任務。
+
+這次不是 mock。請透過 gpt-codex-web-bridge 呼叫 start_mission，讓 bridge 呼叫本機 real Codex CLI 修改 target repo。
+
+goal: Add a subtract(a, b) function to src/math.ts, add Vitest tests for subtract in tests/math.test.ts, run npm.cmd test, and stop when validation passes.
+repoPath: C:\tmp\gcb-chatgpt-real-codex-target
+testCommand: npm.cmd test
+maxLoops: 4
+allowEnvRead: false
+autoContinue: true
+
+啟動後請呼叫 get_mission_status，直到 mission completed、paused、blocked、或 failed。
+請回報：
+- missionId
+- status
+- branch
+- currentLoop
+- validation status
+- test command
+- exit code
+- summary
+- nextAction
+```
+
+Expected successful output:
+
+```text
+status: completed
+lastValidation.status: passed
+testCommand: npm.cmd test
+exitCode: 0
+changed files include:
+- src/math.ts
+- tests/math.test.ts
+```
+
+Placeholders for real evidence:
+
+missionId:
+
+```text
+[paste mission id]
+```
+
+status:
+
+```text
+[paste final status]
+```
+
+branch:
+
+```text
+[paste mission branch]
+```
+
+validation:
+
+```text
+[paste lastValidation status, command, and exit code]
+```
+
+changed files:
+
+```text
+[paste changed files]
+```
+
+npm.cmd test output:
+
+```text
+[paste target repo npm.cmd test output]
+```
