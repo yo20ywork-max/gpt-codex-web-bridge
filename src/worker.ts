@@ -47,7 +47,7 @@ export class MissionWorker {
       nextAction: "Codex is working on the mission."
     });
 
-    let resumeCodex = Boolean(options?.resumeCodex);
+    let resumeCodex = shouldResumeCodex(state, Boolean(options?.resumeCodex));
 
     while (true) {
       state = await this.store.getMission(missionId);
@@ -73,12 +73,13 @@ export class MissionWorker {
       });
 
       const codexResult = await this.runner.run({ mission: state, prompt, resume: resumeCodex }, paths.codexDir);
-      resumeCodex = Boolean(codexResult.sessionId);
       state = await this.store.patchState(missionId, {
+        hasCodexRun: codexResult.exitCode === 0 && !codexResult.rateLimitDetected ? true : state.hasCodexRun,
         codexSessionId: codexResult.sessionId ?? state.codexSessionId,
         lastCodexOutputPath: codexResult.combinedOutputPath,
         nextAction: "Inspecting Codex output and repository diff."
       });
+      resumeCodex = shouldResumeCodex(state, false);
 
       await this.store.appendLedger(missionId, "codex_finished", summarizeOutput(codexResult.combinedOutput, 12), {
         exitCode: codexResult.exitCode,
@@ -167,7 +168,7 @@ export class MissionWorker {
         return;
       }
 
-      resumeCodex = Boolean(state.codexSessionId);
+      resumeCodex = shouldResumeCodex(state, false);
     }
   }
 
@@ -227,6 +228,10 @@ export class MissionWorker {
       })
     );
   }
+}
+
+export function shouldResumeCodex(state: MissionState, explicitResume: boolean): boolean {
+  return explicitResume || Boolean(state.codexSessionId) || Boolean(state.hasCodexRun);
 }
 
 export class MissionWorkerManager {

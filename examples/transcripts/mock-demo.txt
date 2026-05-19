@@ -1,0 +1,52 @@
+> npm run mock-demo
+
+> gpt-codex-web-bridge@0.1.0 mock-demo
+> cross-env GCB_MOCK_CODEX=1 GCB_MOCK_SCENARIO=validation_fail_then_success tsx src/cli.ts mock-demo
+
+{
+  "demoRoot": "C:\\Users\\User\\AppData\\Local\\Temp\\gcb-mock-demo-XmP1hh",
+  "repoPath": "C:\\Users\\User\\AppData\\Local\\Temp\\gcb-mock-demo-XmP1hh\\repo",
+  "storagePath": "C:\\Users\\User\\AppData\\Local\\Temp\\gcb-mock-demo-XmP1hh\\storage",
+  "status": {
+    "missionId": "m_mpctzzbt_16f90dc2",
+    "goal": "Run the mock mission until validation passes.",
+    "branch": "gcb/m_mpctzzbt_16f90dc2",
+    "status": "completed",
+    "currentLoop": 2,
+    "maxLoops": 4,
+    "lastValidation": {
+      "status": "passed",
+      "command": "npm test",
+      "exitCode": 0,
+      "summary": "All validation commands passed."
+    }
+  }
+}
+
+--- report.md ---
+
+# Mission Report: m_mpctzzbt_16f90dc2
+
+- Mission ID: m_mpctzzbt_16f90dc2
+- Goal: Run the mock mission until validation passes.
+- Branch: gcb/m_mpctzzbt_16f90dc2
+- Status: completed
+- Loop count: 2/4
+- Status page: http://localhost:8787/status?missionId=m_mpctzzbt_16f90dc2
+
+## Validation
+
+- Status: passed
+- Command: npm test
+- Exit code: 0
+
+## Latest Ledger Summary
+
+- mission_started: Mission created.
+- codex_started: Starting Codex loop 1.
+- codex_finished: Mock Codex run 1: wrote gcb-mock-status.txt=fail.
+- validation_finished: npm test failed.
+- codex_started: Starting Codex loop 2.
+- codex_finished: Mock Codex run 2: wrote gcb-mock-status.txt=pass.
+- validation_finished: All validation commands passed.
+- completed: Mission completed.

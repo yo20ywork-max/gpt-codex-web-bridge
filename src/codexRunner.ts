@@ -229,7 +229,7 @@ function makeLogPaths(codexDir: string, stem: string): { stdoutPath: string; std
   };
 }
 
-function buildCodexArgs(state: MissionState, prompt: string, resume: boolean): string[] {
+export function buildCodexArgs(state: MissionState, prompt: string, resume: boolean): string[] {
   if (!resume) {
     return ["exec", prompt];
   }

@@ -17,6 +17,7 @@ describe("prompt builders", () => {
       testCommand: "npm test",
       allowEnvRead: false,
       autoContinue: true,
+      hasCodexRun: false,
       lastValidation: { status: "not_run" }
     };
 

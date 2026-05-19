@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
+import { CodexRunner } from "../src/codexRunner.js";
 import { MissionService } from "../src/missionService.js";
+import { MissionStore } from "../src/missionStore.js";
+import type { CodexRunOptions, CodexRunResult } from "../src/types.js";
+import { MissionWorker, MissionWorkerManager } from "../src/worker.js";
 import { cleanupTempDir, createGitRepo } from "./helpers.js";
 
 const originalMockCodex = process.env.GCB_MOCK_CODEX;
@@ -122,4 +128,69 @@ describe("mock mission workflow", () => {
       await cleanupTempDir(fixture.root);
     }
   });
+
+  it("requests native resume for a repair loop even when no session id was parsed", async () => {
+    const fixture = await createGitRepo({
+      packageJson: {
+        scripts: {
+          test: "node -e \"const fs=require('fs'); process.exit(fs.readFileSync('gcb-mock-status.txt','utf8').trim()==='pass'?0:1)\""
+        }
+      },
+      files: {
+        "gcb-mock-status.txt": "fail\n"
+      }
+    });
+    try {
+      const store = new MissionStore(fixture.storagePath);
+      const runner = new NoSessionRepairRunner();
+      const worker = new MissionWorker(store, runner);
+      const manager = new MissionWorkerManager(worker);
+      const service = new MissionService(store, runner, manager);
+
+      const start = await service.startMission({
+        repoPath: fixture.repoPath,
+        goal: "Repair without a parsed Codex session id",
+        testCommand: "npm test",
+        maxLoops: 4
+      });
+      const missionId = String(start.missionId);
+      await service.waitForMission(missionId);
+
+      const status = await service.getMissionStatus(missionId);
+      expect(status.status).toBe("completed");
+      expect(runner.resumeFlags).toEqual([false, true]);
+    } finally {
+      await cleanupTempDir(fixture.root);
+    }
+  });
 });
+
+class NoSessionRepairRunner extends CodexRunner {
+  readonly resumeFlags: boolean[] = [];
+  private count = 0;
+
+  override async run(options: CodexRunOptions, codexDir: string): Promise<CodexRunResult> {
+    this.count += 1;
+    this.resumeFlags.push(options.resume);
+    await fs.promises.mkdir(codexDir, { recursive: true });
+    const status = this.count === 1 ? "fail" : "pass";
+    await fs.promises.writeFile(path.join(options.mission.repoPath, "gcb-mock-status.txt"), `${status}\n`, "utf8");
+    const output = `No-session Codex mock wrote ${status}.\n`;
+    const stem = path.join(codexDir, `${Date.now()}-no-session`);
+    const stdoutPath = `${stem}-stdout.log`;
+    const stderrPath = `${stem}-stderr.log`;
+    const combinedOutputPath = `${stem}-combined.log`;
+    await fs.promises.writeFile(stdoutPath, output, "utf8");
+    await fs.promises.writeFile(stderrPath, "", "utf8");
+    await fs.promises.writeFile(combinedOutputPath, output, "utf8");
+
+    return {
+      exitCode: 0,
+      stdoutPath,
+      stderrPath,
+      combinedOutputPath,
+      combinedOutput: output,
+      rateLimitDetected: false
+    };
+  }
+}

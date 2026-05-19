@@ -38,6 +38,7 @@ export interface MissionState {
   lintCommand?: string;
   allowEnvRead: boolean;
   autoContinue: boolean;
+  hasCodexRun: boolean;
   codexSessionId?: string;
   lastGoodCommit?: string;
   lastCodexOutputPath?: string;
