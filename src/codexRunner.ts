@@ -199,6 +199,14 @@ export class CodexRunner {
     if (scenario === "rate_limit") {
       output = "Mock Codex: usage limit reached. Please resume later.\n";
       exitCode = 1;
+    } else if (scenario === "rate_limit_then_success") {
+      if (count === 1) {
+        output = "Mock Codex: usage limit reached. Please resume later.\n";
+        exitCode = 1;
+      } else {
+        await fs.promises.writeFile(path.join(options.mission.repoPath, "gcb-mock-status.txt"), "pass\n", "utf8");
+        output = `Mock Codex run ${count}: resumed and wrote gcb-mock-status.txt=pass.\n`;
+      }
     } else if (scenario === "validation_fail_then_success") {
       const status = count === 1 ? "fail" : "pass";
       await fs.promises.writeFile(path.join(options.mission.repoPath, "gcb-mock-status.txt"), `${status}\n`, "utf8");

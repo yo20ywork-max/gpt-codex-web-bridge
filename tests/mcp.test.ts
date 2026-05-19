@@ -33,8 +33,12 @@ describe("MCP tool metadata", () => {
     for (const tool of tools) {
       expect(tool.securitySchemes).toEqual([{ type: "noauth" }]);
       expect((tool._meta as Record<string, unknown>).securitySchemes).toEqual([{ type: "noauth" }]);
-      expect(JSON.stringify(tool)).not.toMatch(/oauth2|bearer|authorization|account-linking/i);
+      expect(JSON.stringify(tool)).not.toMatch(/oauth2|oauth client|bearer|authorization|account[-_ ]?linking|client_secret|credential|access_token|refresh_token/i);
     }
+
+    const continueMission = tools.find((tool) => tool.name === "continue_mission");
+    expect(continueMission?.securitySchemes).toEqual([{ type: "noauth" }]);
+    expect((continueMission?._meta as Record<string, unknown>).securitySchemes).toEqual([{ type: "noauth" }]);
   });
 });
 
