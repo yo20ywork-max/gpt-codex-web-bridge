@@ -1,0 +1,54 @@
+{
+  "name": "gpt-codex-web-bridge",
+  "version": "0.1.0",
+  "description": "Local-first ChatGPT Web / MCP bridge for running resumable Codex CLI missions in user-owned repositories.",
+  "type": "module",
+  "bin": {
+    "gcb": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "prompts",
+    "examples",
+    "README.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "doctor": "tsx src/cli.ts doctor",
+    "mock-demo": "cross-env GCB_MOCK_CODEX=1 GCB_MOCK_SCENARIO=validation_fail_then_success tsx src/cli.ts mock-demo",
+    "demo:rate-limit": "tsx src/cli.ts demo-rate-limit"
+  },
+  "keywords": [
+    "codex",
+    "mcp",
+    "chatgpt",
+    "bridge",
+    "local-first"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "cross-env": "^7.0.3",
+    "cross-spawn": "^7.0.6",
+    "express": "^5.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
