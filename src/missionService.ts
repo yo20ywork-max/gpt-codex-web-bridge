@@ -6,7 +6,7 @@ import { MissionStore } from "./missionStore.js";
 import { getBridgeRoot, isSamePath, normalizePath, nowIso } from "./paths.js";
 import { buildStructuredReportSummary, generateReport } from "./report.js";
 import { SafetyGuard } from "./safetyGuard.js";
-import type { ContinueMissionInput, MissionState, StartMissionInput } from "./types.js";
+import type { CodexMode, ContinueMissionInput, MissionState, StartMissionInput } from "./types.js";
 import { MissionWorker, MissionWorkerManager } from "./worker.js";
 
 export class MissionService {
@@ -34,12 +34,14 @@ export class MissionService {
     const missionId = this.store.createMissionId();
     const branch = `gcb/${missionId}`;
     const now = nowIso();
+    const codexMode = getCodexMode();
     let state: MissionState = {
       missionId,
       goal: validated.goal,
       repoPath: repoRoot,
       branch,
       status: "queued",
+      codexMode,
       createdAt: now,
       updatedAt: now,
       maxLoops: validated.maxLoops,
@@ -48,6 +50,7 @@ export class MissionService {
       lintCommand: validated.lintCommand,
       allowEnvRead: validated.allowEnvRead,
       autoContinue: validated.autoContinue,
+      requireRealCodex: validated.requireRealCodex,
       hasCodexRun: false,
       verificationPauseConsumed: false,
       lastGoodCommit: await getHeadCommit(repoRoot),
@@ -59,8 +62,26 @@ export class MissionService {
     await this.store.appendLedger(missionId, "mission_started", "Mission created.", {
       repoPath: repoRoot,
       branch,
-      goal: validated.goal
+      goal: validated.goal,
+      codexMode,
+      requireRealCodex: validated.requireRealCodex
     });
+
+    if (validated.requireRealCodex && codexMode === "mock") {
+      state = await this.store.patchState(missionId, {
+        status: "blocked",
+        blockReason: "real_codex_required_but_mock_enabled",
+        nextAction: "Restart the bridge with GCB_MOCK_CODEX and GCB_MOCK_SCENARIO cleared, then start a new mission."
+      });
+      await this.store.appendLedger(
+        missionId,
+        "blocked",
+        "Blocked before Codex ran because requireRealCodex was true while GCB_MOCK_CODEX enabled mock mode.",
+        { codexMode }
+      );
+      await this.writeInitialReport(state);
+      return this.statusPayload(state, { workerStarted: false });
+    }
 
     if (await isDirtyWorktree(repoRoot)) {
       state = await this.store.patchState(missionId, {
@@ -191,6 +212,7 @@ export class MissionService {
     return {
       missionId: state.missionId,
       status: state.status,
+      codexMode: state.codexMode,
       loopCount: `${state.currentLoop}/${state.maxLoops}`,
       currentLoop: state.currentLoop,
       maxLoops: state.maxLoops,
@@ -260,6 +282,7 @@ export class MissionService {
       completedSteps: this.completedSteps(state),
       currentLoop: state.currentLoop,
       branch: state.branch,
+      codexMode: state.codexMode,
       lastCheckpoint: state.lastCodexOutputPath,
       lastValidation: state.lastValidation,
       pauseReason: state.pauseReason,
@@ -288,7 +311,7 @@ export class MissionService {
   }
 }
 
-function validateStartMissionInput(input: StartMissionInput): Required<Pick<StartMissionInput, "goal" | "repoPath" | "maxLoops" | "autoContinue" | "allowEnvRead">> &
+function validateStartMissionInput(input: StartMissionInput): Required<Pick<StartMissionInput, "goal" | "repoPath" | "maxLoops" | "autoContinue" | "allowEnvRead" | "requireRealCodex">> &
   Pick<StartMissionInput, "testCommand" | "lintCommand"> {
   const goal = input.goal?.trim();
   const repoPath = input.repoPath?.trim();
@@ -308,9 +331,14 @@ function validateStartMissionInput(input: StartMissionInput): Required<Pick<Star
     maxLoops,
     autoContinue: input.autoContinue ?? true,
     allowEnvRead: input.allowEnvRead ?? false,
+    requireRealCodex: input.requireRealCodex ?? false,
     testCommand: trimOptional(input.testCommand),
     lintCommand: trimOptional(input.lintCommand)
   };
+}
+
+function getCodexMode(): CodexMode {
+  return process.env.GCB_MOCK_CODEX === "1" ? "mock" : "real";
 }
 
 function validateContinueMissionInput(input: ContinueMissionInput): ContinueMissionInput {

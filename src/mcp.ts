@@ -35,7 +35,8 @@ export function createGcbMcpServer(service: MissionService): McpServer {
         lintCommand: z.string().optional(),
         maxLoops: z.number().int().positive().optional().default(12),
         autoContinue: z.boolean().optional().default(true),
-        allowEnvRead: z.boolean().optional().default(false)
+        allowEnvRead: z.boolean().optional().default(false),
+        requireRealCodex: z.boolean().optional().default(false)
       }
     }),
     async (args) => toolResponse(await service.startMission(args))

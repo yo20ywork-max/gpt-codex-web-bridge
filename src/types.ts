@@ -2,6 +2,8 @@ export type MissionStatus = "queued" | "running" | "paused" | "blocked" | "compl
 
 export type ValidationStatus = "not_run" | "passed" | "failed";
 
+export type CodexMode = "real" | "mock";
+
 export type LedgerEventType =
   | "mission_started"
   | "codex_started"
@@ -30,6 +32,7 @@ export interface MissionState {
   repoPath: string;
   branch?: string;
   status: MissionStatus;
+  codexMode?: CodexMode;
   createdAt: string;
   updatedAt: string;
   maxLoops: number;
@@ -38,6 +41,7 @@ export interface MissionState {
   lintCommand?: string;
   allowEnvRead: boolean;
   autoContinue: boolean;
+  requireRealCodex?: boolean;
   hasCodexRun: boolean;
   verificationPauseConsumed?: boolean;
   codexSessionId?: string;
@@ -64,6 +68,7 @@ export interface StartMissionInput {
   maxLoops?: number;
   autoContinue?: boolean;
   allowEnvRead?: boolean;
+  requireRealCodex?: boolean;
 }
 
 export interface ContinueMissionInput {
@@ -86,6 +91,7 @@ export interface MissionSummary {
   repoPath: string;
   branch?: string;
   status: MissionStatus;
+  codexMode?: CodexMode;
   updatedAt: string;
   currentLoop: number;
   maxLoops: number;

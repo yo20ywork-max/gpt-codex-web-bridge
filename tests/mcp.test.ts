@@ -39,6 +39,9 @@ describe("MCP tool metadata", () => {
     const continueMission = tools.find((tool) => tool.name === "continue_mission");
     expect(continueMission?.securitySchemes).toEqual([{ type: "noauth" }]);
     expect((continueMission?._meta as Record<string, unknown>).securitySchemes).toEqual([{ type: "noauth" }]);
+
+    const startMission = tools.find((tool) => tool.name === "start_mission");
+    expect(JSON.stringify(startMission)).toContain("requireRealCodex");
   });
 });
 

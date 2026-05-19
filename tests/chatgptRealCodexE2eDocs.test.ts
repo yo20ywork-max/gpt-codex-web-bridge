@@ -50,6 +50,16 @@ describe("ChatGPT Web real Codex E2E verification package", () => {
     expect(readme).not.toMatch(/ChatGPT Web -> real Codex CLI full end-to-end mission:\s*Verified/i);
   });
 
+  it("requires the ChatGPT Web real E2E prompt to request real Codex mode", () => {
+    const transcriptDoc = readRepoFile("docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md");
+    const template = readRepoFile("examples/transcripts/chatgpt-web-real-codex-e2e-test.txt");
+
+    expect(transcriptDoc).toContain("requireRealCodex: true");
+    expect(transcriptDoc).toContain("Codex Mode");
+    expect(template).toContain("requireRealCodex: true");
+    expect(template).toContain("codexMode");
+  });
+
   it("labels the transcript template as a template rather than evidence", () => {
     const template = readRepoFile("examples/transcripts/chatgpt-web-real-codex-e2e-test.txt");
 

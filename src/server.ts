@@ -103,6 +103,7 @@ function renderStatusWidgetPage(payload: Record<string, unknown>): string {
   const rows = [
     ["Mission ID", missionId],
     ["Status", String(payload.status ?? "")],
+    ["Codex Mode", String(payload.codexMode ?? "unknown")],
     ["Loop Count", String(payload.loopCount ?? "")],
     ["Validation Result", String(payload.validationResult ?? "")],
     ["Validation Command", String(payload.validationCommand ?? "not set")],

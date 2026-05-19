@@ -170,6 +170,7 @@ export class MissionStore {
       repoPath: state.repoPath,
       branch: state.branch,
       status: state.status,
+      codexMode: state.codexMode,
       updatedAt: state.updatedAt,
       currentLoop: state.currentLoop,
       maxLoops: state.maxLoops,

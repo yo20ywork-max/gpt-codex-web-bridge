@@ -45,6 +45,7 @@ Verified:
 - Build/tests/mock-demo: Verified by `npm.cmd run build`, `npm.cmd test`, and `npm.cmd run verify:mock`.
 - Real Codex CLI mission: Verified by [`docs/REAL_CODEX_RUN_TRANSCRIPT.md`](docs/REAL_CODEX_RUN_TRANSCRIPT.md).
 - Real Codex CLI resume: Verified by [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md).
+- Local bridge -> real Codex E2E with `requireRealCodex`: Verified by mission `m_mpd98phl_64e77b2a`; `codexMode: real`, no mock artifacts in the report, `src/math.ts` and `tests/math.test.ts` changed, and `npm.cmd test` passed.
 - ChatGPT Web connector creation: Verified by [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
 - ChatGPT Web `list_missions`: Verified.
 - ChatGPT Web mock `start_mission`: Verified by mission `m_mpd37io2_033c3cbe`.
@@ -133,6 +134,7 @@ For the full manual checklist and transcript template, see [`docs/CHATGPT_WEB_RU
 For the ChatGPT Web `continue_mission` pause/resume checklist, see [`docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md`](docs/CHATGPT_WEB_CONTINUE_MISSION_TRANSCRIPT.md).
 
 For the ChatGPT Web -> real Codex CLI E2E checklist, see [`docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md`](docs/CHATGPT_WEB_REAL_CODEX_E2E_TRANSCRIPT.md).
+For that real E2E flow, the `start_mission` call must include `requireRealCodex: true`; the bridge blocks immediately if mock mode is still enabled.
 
 ## ChatGPT Web Prompt
 
@@ -160,6 +162,7 @@ When starting a mission, call start_mission with:
 - maxLoops: 12
 - autoContinue: true
 - allowEnvRead: false
+- requireRealCodex: true only when I explicitly ask for real Codex verification
 
 When continuing, call continue_mission with the latest mission id if known; otherwise omit missionId so the bridge resumes the latest paused mission.
 ```
@@ -264,7 +267,7 @@ http://localhost:8787/status?missionId=<missionId>
 
 ## MCP Tools
 
-- `start_mission`: create a Codex mission for a target git repo.
+- `start_mission`: create a Codex mission for a target git repo. Use `requireRealCodex: true` for real Codex verification so mock mode is blocked instead of mistaken for real evidence.
 - `continue_mission`: resume the latest paused mission, or a specific mission id.
 - `pause_mission`: pause a mission and gracefully stop its Codex process when possible.
 - `get_mission_status`: inspect status, loop count, validation, branch, checkpoint, and next action.

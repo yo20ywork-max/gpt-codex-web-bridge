@@ -10,6 +10,7 @@ describe("report generator", () => {
       repoPath: "/tmp/repo",
       branch: "gcb/m_report",
       status: "blocked",
+      codexMode: "mock",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       maxLoops: 12,
@@ -27,6 +28,8 @@ describe("report generator", () => {
     };
 
     const report = generateReport({ state, ledger: [] });
+    expect(report).toContain("## Codex Mode");
+    expect(report).toContain("- mock");
     expect(report).toContain("## Validation");
     expect(report).toContain("npm test");
     expect(report).toContain("Fix the failing test.");
