@@ -6,6 +6,7 @@ describe("CodexRunner", () => {
   it("detects rate limit and quota output", () => {
     expect(CodexRunner.detectRateLimit("429 too many requests")).toBe(true);
     expect(CodexRunner.detectRateLimit("Usage limit reached")).toBe(true);
+    expect(CodexRunner.detectRateLimit("node_modules/vitest/dist/chunks/cli-api.js:3429: active task")).toBe(false);
     expect(CodexRunner.detectRateLimit("all good")).toBe(false);
   });
 

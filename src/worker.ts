@@ -133,6 +133,20 @@ export class MissionWorker {
         return;
       }
 
+      if (shouldVerificationPause(state)) {
+        state = await this.store.patchState(missionId, {
+          status: "paused",
+          pauseReason: "verification_pause_after_codex",
+          verificationPauseConsumed: true,
+          nextAction: `Run gcb continue ${missionId} to verify Codex resume.`
+        });
+        await this.store.appendLedger(missionId, "paused", "Verification pause after successful Codex run.", {
+          reason: "verification_pause_after_codex"
+        });
+        await this.writeReport(state, changeSummary, safety);
+        return;
+      }
+
       await this.store.appendLedger(missionId, "validation_started", "Running validation commands.");
       const validation = await runValidationCommands(state.repoPath, state, paths.validationDir);
       state = await this.store.patchState(missionId, {
@@ -232,6 +246,15 @@ export class MissionWorker {
 
 export function shouldResumeCodex(state: MissionState, explicitResume: boolean): boolean {
   return explicitResume || Boolean(state.codexSessionId) || Boolean(state.hasCodexRun);
+}
+
+function shouldVerificationPause(state: MissionState): boolean {
+  return (
+    process.env.GCB_VERIFY_PAUSE_AFTER_CODEX === "1" &&
+    process.env.GCB_MOCK_CODEX !== "1" &&
+    !state.verificationPauseConsumed &&
+    state.hasCodexRun
+  );
 }
 
 export class MissionWorkerManager {

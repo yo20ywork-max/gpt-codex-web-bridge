@@ -10,7 +10,7 @@ export function commandForPlatform(command: string): string {
   }
 
   const lower = command.toLowerCase();
-  const needsCmd = ["npm", "npx", "pnpm", "yarn", "codex"].includes(lower);
+  const needsCmd = ["npm", "npx", "pnpm", "yarn"].includes(lower);
   return needsCmd ? `${command}.cmd` : command;
 }
 

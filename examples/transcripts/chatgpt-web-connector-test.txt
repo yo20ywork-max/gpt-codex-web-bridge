@@ -1,0 +1,48 @@
+Real evidence from ChatGPT Web.
+
+This transcript summary records actual ChatGPT Web tool calls supplied by the maintainer. It does not claim ChatGPT Web -> real Codex CLI end-to-end verification, and it does not claim ChatGPT Web continue_mission verification.
+
+Connector URL used:
+https://germicide-paddle-luminance.ngrok-free.dev/mcp
+
+Verified:
+- ChatGPT Web connector creation
+- ChatGPT Web list_missions tool call
+- ChatGPT Web start_mission tool call for a mock mission
+
+Not yet verified:
+- ChatGPT Web continue_mission
+- ChatGPT Web -> real Codex CLI mission
+
+list_missions result:
+ChatGPT Web successfully called list_missions. It returned 6 missions:
+- m_mpcyib0h_f6988e4a: completed
+- m_mpcxaaai_48463dfb: blocked
+- m_mpcvo0l4_e4a2d4e1: completed
+- m_mpcvhxwz_3006b7d2: completed
+- m_mpcvh78p_d1ae8f32: failed
+- m_mpcvdybg_a662905e: completed
+
+Known old failed attempt:
+m_mpcxaaai_48463dfb is an intentionally preserved blocked/failed historical attempt caused by a test repo that accidentally staged node_modules and lacked local git user identity. It is not the current ChatGPT Web verification result.
+
+start_mission mock mission result:
+- Mission ID: m_mpd37io2_033c3cbe
+- Status: completed
+- Repo: C:\tmp\gcb-chatgpt-web-mock-target
+- Branch: gcb/m_mpd37io2_033c3cbe
+- Loop: 1 / 4
+- Validation: passed
+- Test command: npm.cmd test
+- Exit code: 0
+- Summary: All validation commands passed.
+- Next action: Review the branch and merge manually when satisfied.
+
+Final status:
+completed
+
+Validation:
+passed
+
+Status polling:
+Partially verified / status returned. The available evidence includes the completed mission result, but this file does not contain a separate get_mission_status polling transcript.

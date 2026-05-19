@@ -10,10 +10,12 @@ import { cleanupTempDir, createGitRepo } from "./helpers.js";
 
 const originalMockCodex = process.env.GCB_MOCK_CODEX;
 const originalMockScenario = process.env.GCB_MOCK_SCENARIO;
+const originalVerifyPauseAfterCodex = process.env.GCB_VERIFY_PAUSE_AFTER_CODEX;
 
 afterEach(() => {
-  process.env.GCB_MOCK_CODEX = originalMockCodex;
-  process.env.GCB_MOCK_SCENARIO = originalMockScenario;
+  restoreEnv("GCB_MOCK_CODEX", originalMockCodex);
+  restoreEnv("GCB_MOCK_SCENARIO", originalMockScenario);
+  restoreEnv("GCB_VERIFY_PAUSE_AFTER_CODEX", originalVerifyPauseAfterCodex);
 });
 
 describe("mock mission workflow", () => {
@@ -163,6 +165,51 @@ describe("mock mission workflow", () => {
       await cleanupTempDir(fixture.root);
     }
   });
+
+  it("pauses once after Codex for verification and continues with native resume requested", async () => {
+    const fixture = await createGitRepo();
+    try {
+      delete process.env.GCB_MOCK_CODEX;
+      process.env.GCB_VERIFY_PAUSE_AFTER_CODEX = "1";
+
+      const store = new MissionStore(fixture.storagePath);
+      const runner = new VerificationPauseRunner();
+      const worker = new MissionWorker(store, runner);
+      const manager = new MissionWorkerManager(worker);
+      const service = new MissionService(store, runner, manager);
+
+      const start = await service.startMission({
+        repoPath: fixture.repoPath,
+        goal: "Pause after Codex for resume verification",
+        testCommand: "npm test",
+        maxLoops: 3
+      });
+      const missionId = String(start.missionId);
+      await service.waitForMission(missionId);
+
+      const pausedStatus = await service.getMissionStatus(missionId);
+      const pausedState = await store.getMission(missionId);
+      const pausedLedger = await store.readLedger(missionId);
+      expect(pausedStatus.status).toBe("paused");
+      expect(pausedStatus.pauseReason).toBe("verification_pause_after_codex");
+      expect(pausedStatus.lastValidation).toMatchObject({ status: "not_run" });
+      expect(pausedState.hasCodexRun).toBe(true);
+      expect(pausedState.verificationPauseConsumed).toBe(true);
+      expect(pausedState.codexSessionId).toBeUndefined();
+      expect(pausedLedger.some((event) => event.type === "paused" && event.message.includes("Verification pause"))).toBe(true);
+
+      const continued = await service.continueMission({ missionId });
+      expect(continued.missionId).toBe(missionId);
+      await service.waitForMission(missionId);
+
+      const completedStatus = await service.getMissionStatus(missionId);
+      expect(completedStatus.status).toBe("completed");
+      expect(completedStatus.lastValidation).toMatchObject({ status: "passed" });
+      expect(runner.resumeFlags).toEqual([false, true]);
+    } finally {
+      await cleanupTempDir(fixture.root);
+    }
+  });
 });
 
 class NoSessionRepairRunner extends CodexRunner {
@@ -177,6 +224,43 @@ class NoSessionRepairRunner extends CodexRunner {
     await fs.promises.writeFile(path.join(options.mission.repoPath, "gcb-mock-status.txt"), `${status}\n`, "utf8");
     const output = `No-session Codex mock wrote ${status}.\n`;
     const stem = path.join(codexDir, `${Date.now()}-no-session`);
+    const stdoutPath = `${stem}-stdout.log`;
+    const stderrPath = `${stem}-stderr.log`;
+    const combinedOutputPath = `${stem}-combined.log`;
+    await fs.promises.writeFile(stdoutPath, output, "utf8");
+    await fs.promises.writeFile(stderrPath, "", "utf8");
+    await fs.promises.writeFile(combinedOutputPath, output, "utf8");
+
+    return {
+      exitCode: 0,
+      stdoutPath,
+      stderrPath,
+      combinedOutputPath,
+      combinedOutput: output,
+      rateLimitDetected: false
+    };
+  }
+}
+
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+  process.env[name] = value;
+}
+
+class VerificationPauseRunner extends CodexRunner {
+  readonly resumeFlags: boolean[] = [];
+  private count = 0;
+
+  override async run(options: CodexRunOptions, codexDir: string): Promise<CodexRunResult> {
+    this.count += 1;
+    this.resumeFlags.push(options.resume);
+    await fs.promises.mkdir(codexDir, { recursive: true });
+    await fs.promises.writeFile(path.join(options.mission.repoPath, "verification-resume.txt"), `run ${this.count}\n`, "utf8");
+    const output = `Verification pause runner completed run ${this.count}.\n`;
+    const stem = path.join(codexDir, `${Date.now()}-verification-pause`);
     const stdoutPath = `${stem}-stdout.log`;
     const stderrPath = `${stem}-stderr.log`;
     const combinedOutputPath = `${stem}-combined.log`;

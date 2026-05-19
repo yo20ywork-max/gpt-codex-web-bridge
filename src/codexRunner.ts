@@ -9,7 +9,7 @@ const RATE_LIMIT_PATTERNS = [
   /rate limit/i,
   /quota/i,
   /usage limit/i,
-  /429/,
+  /(?:^|\D)429(?:\D|$)/,
   /too many requests/i,
   /temporarily unavailable/i,
   /limit reached/i
@@ -92,7 +92,7 @@ export class CodexRunner {
       candidates.push({ executable: bridgeCodex, argsPrefix: [] });
     }
     candidates.push({ executable: commandForPlatform("codex"), argsPrefix: [] });
-    candidates.push({ executable: commandForPlatform("npx"), argsPrefix: ["-y", "codex"] });
+    candidates.push({ executable: commandForPlatform("npx"), argsPrefix: ["-y", "@openai/codex"] });
 
     return candidates;
   }
@@ -114,6 +114,9 @@ export class CodexRunner {
       const combined = fs.createWriteStream(options.combinedOutputPath, { flags: "w" });
       let combinedOutput = "";
       let settled = false;
+      const invocationLine = `[gcb] argv: ${options.executable} ${redactPromptArg(options.args).join(" ")}\n`;
+      combinedOutput += invocationLine;
+      combined.write(invocationLine);
 
       const finish = (exitCode: number): void => {
         if (settled) {
@@ -149,7 +152,7 @@ export class CodexRunner {
         combinedOutput += text;
         stderr.write(text);
         combined.write(text);
-        finish((error as NodeJS.ErrnoException).code === "ENOENT" ? 127 : 1);
+        finish(isUnavailableExecutableError(error as NodeJS.ErrnoException) ? 127 : 1);
         return;
       }
 
@@ -172,7 +175,7 @@ export class CodexRunner {
         combinedOutput += text;
         stderr.write(text);
         combined.write(text);
-        finish(error.code === "ENOENT" ? 127 : 1);
+        finish(isUnavailableExecutableError(error) ? 127 : 1);
       });
       child.on("close", (code) => {
         finish(code ?? 1);
@@ -249,4 +252,15 @@ async function exists(inputPath: string): Promise<boolean> {
     .access(inputPath)
     .then(() => true)
     .catch(() => false);
+}
+
+function isUnavailableExecutableError(error: NodeJS.ErrnoException): boolean {
+  return error.code === "ENOENT" || error.code === "EACCES" || error.code === "EPERM";
+}
+
+function redactPromptArg(args: string[]): string[] {
+  if (args.length === 0) {
+    return args;
+  }
+  return args.map((arg, index) => (index === args.length - 1 ? "<prompt>" : arg));
 }
