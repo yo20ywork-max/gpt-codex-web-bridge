@@ -48,6 +48,7 @@ export class MissionService {
       lintCommand: validated.lintCommand,
       allowEnvRead: validated.allowEnvRead,
       autoContinue: validated.autoContinue,
+      hasCodexRun: false,
       lastGoodCommit: await getHeadCommit(repoRoot),
       lastValidation: { status: "not_run" },
       nextAction: "Preparing mission branch."

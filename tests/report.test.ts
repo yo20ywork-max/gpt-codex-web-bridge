@@ -16,6 +16,7 @@ describe("report generator", () => {
       currentLoop: 3,
       allowEnvRead: false,
       autoContinue: true,
+      hasCodexRun: true,
       lastValidation: {
         status: "failed",
         command: "npm test",

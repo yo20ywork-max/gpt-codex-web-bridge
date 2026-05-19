@@ -21,6 +21,7 @@ describe("MissionStore", () => {
         currentLoop: 0,
         allowEnvRead: false,
         autoContinue: true,
+        hasCodexRun: false,
         lastValidation: { status: "not_run" }
       };
 
@@ -56,6 +57,7 @@ describe("MissionStore", () => {
           currentLoop: 0,
           allowEnvRead: false,
           autoContinue: true,
+          hasCodexRun: false,
           lastValidation: { status: "not_run" }
         });
         await new Promise((resolve) => setTimeout(resolve, 5));

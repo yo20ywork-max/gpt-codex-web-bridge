@@ -1,10 +1,42 @@
 # gpt-codex-web-bridge
 
+[![CI](https://github.com/yo20ywork-max/gpt-codex-web-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/yo20ywork-max/gpt-codex-web-bridge/actions/workflows/ci.yml)
+
 ChatGPT Web as the mission manager. Codex as the coding worker.
 
 Say one thing in ChatGPT. The bridge lets Codex code, test, repair, checkpoint, pause on usage limits, and resume when you say "continue".
 
 `gpt-codex-web-bridge` is a local-first open-source MVP for connecting ChatGPT Web to Codex CLI through the official ChatGPT Apps / MCP route. It does not automate the ChatGPT DOM, scrape ChatGPT conversations, store passwords, cookies, browser session tokens, OpenAI API keys, or OpenAI credentials, and it does not bypass rate limits.
+
+## Try It Fast
+
+15-second local mock demo:
+
+```bash
+npm run mock-demo
+```
+
+Fresh clone first:
+
+```bash
+npm ci
+```
+
+60-second real Codex smoke test: [`docs/REAL_CODEX_SMOKE_TEST.md`](docs/REAL_CODEX_SMOKE_TEST.md)
+
+ChatGPT Web connection test: [`docs/CHATGPT_WEB_CONNECTION_TEST.md`](docs/CHATGPT_WEB_CONNECTION_TEST.md)
+
+Safety disclaimer: the bridge instructs Codex not to read secrets and blocks/reports forbidden files if they appear in git diff. The current MVP does not provide OS-level file-read prevention. Use Codex sandbox/approval settings and avoid running missions on repos containing production secrets.
+
+Terminal transcript:
+
+```text
+> npm run mock-demo
+status: completed
+loop: 2/4
+validation: passed
+report: .gpt-codex-web-bridge/missions/<missionId>/report.md
+```
 
 ## Architecture
 
@@ -229,13 +261,17 @@ Set `GCB_STORAGE_DIR` to store mission files somewhere else.
 ## Safety Boundaries
 
 - Official ChatGPT Apps / MCP route only; no ChatGPT DOM scraping.
-- No password, cookie, browser session token, OpenAI API key, or OpenAI credential storage.
+- The bridge instructs Codex not to read secrets.
+- The bridge blocks/reports forbidden files if they are changed in git diff.
+- The current MVP does not provide OS-level file-read prevention.
+- Users should rely on Codex sandbox/approval settings and avoid running missions on repos containing production secrets.
+- The bridge never intentionally stores passwords, cookies, browser session tokens, OpenAI API keys, or OpenAI credentials.
 - No rate-limit, quota, approval, safety mitigation, or access restriction bypassing.
 - No automatic production deploys.
 - No pushes to `main`.
 - Work happens on `gcb/<missionId>`.
 - Dirty worktrees are blocked instead of stashed or overwritten.
-- `.env`, private keys, SSH keys, cloud credentials, kube configs, and credential folders are forbidden by default.
+- `.env`, private keys, SSH keys, cloud credentials, kube configs, and credential folders are forbidden in changed git diff by default.
 - GitHub Actions workflow changes, dependency changes, auth/payment/permission changes, deleted tests, and weakened assertions are reported as risk flags.
 
 Forbidden file patterns include:
@@ -276,8 +312,14 @@ See:
 - [`examples/chatgpt-continue-message.md`](examples/chatgpt-continue-message.md)
 - [`examples/local-cli-demo.md`](examples/local-cli-demo.md)
 - [`examples/expected-report.md`](examples/expected-report.md)
+- [`examples/transcripts/mock-demo.txt`](examples/transcripts/mock-demo.txt)
+- [`examples/transcripts/rate-limit-demo.txt`](examples/transcripts/rate-limit-demo.txt)
 
 ## Project Docs
 
+- [`docs/REAL_CODEX_SMOKE_TEST.md`](docs/REAL_CODEX_SMOKE_TEST.md)
+- [`docs/CHATGPT_WEB_CONNECTION_TEST.md`](docs/CHATGPT_WEB_CONNECTION_TEST.md)
+- [`docs/MCP_INSPECTOR_TEST.md`](docs/MCP_INSPECTOR_TEST.md)
+- [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md)
 - [`SECURITY.md`](SECURITY.md)
 - [`CONTRIBUTING.md`](CONTRIBUTING.md)

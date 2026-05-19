@@ -1,0 +1,66 @@
+> npm run demo:rate-limit
+
+> gpt-codex-web-bridge@0.1.0 demo:rate-limit
+> tsx src/cli.ts demo-rate-limit
+
+{
+  "demoRoot": "C:\\Users\\User\\AppData\\Local\\Temp\\gcb-rate-limit-demo-LkHwNP",
+  "events": [
+    "mission_started",
+    "codex_working",
+    "rate_limit_detected",
+    "mission_paused",
+    "user_resumed",
+    "mission_completed"
+  ],
+  "missionId": "m_mpctzrhf_d882b852",
+  "paused": {
+    "status": "paused",
+    "currentLoop": 1,
+    "maxLoops": 4,
+    "pauseReason": "rate_limit_or_quota",
+    "lastValidation": {
+      "status": "not_run"
+    }
+  },
+  "continued": {
+    "status": "queued",
+    "currentLoop": 1,
+    "workerStarted": true
+  },
+  "completed": {
+    "status": "completed",
+    "currentLoop": 2,
+    "maxLoops": 4,
+    "lastValidation": {
+      "status": "passed",
+      "command": "npm test",
+      "exitCode": 0,
+      "summary": "All validation commands passed."
+    }
+  }
+}
+
+--- report.md ---
+
+# Mission Report: m_mpctzrhf_d882b852
+
+- Mission ID: m_mpctzrhf_d882b852
+- Goal: Demo a mission that pauses on a Codex usage limit, then resumes and completes.
+- Branch: gcb/m_mpctzrhf_d882b852
+- Status: completed
+- Loop count: 2/4
+- Status page: http://localhost:8787/status?missionId=m_mpctzrhf_d882b852
+
+## Latest Ledger Summary
+
+- mission_started: Mission created.
+- codex_started: Starting Codex loop 1.
+- codex_finished: Mock Codex: usage limit reached. Please resume later.
+- checkpoint: Codex loop 1 output saved.
+- rate_limit_detected: Codex reported a rate limit, quota, usage limit, or temporary availability limit.
+- resumed: Mission resumed.
+- codex_started: Starting Codex loop 2.
+- codex_finished: Mock Codex: success.
+- validation_finished: All validation commands passed.
+- completed: Mission completed.

@@ -6,16 +6,20 @@
 
 - No ChatGPT DOM scraping.
 - No programmatic extraction of ChatGPT Web conversations.
-- No storage of passwords, cookies, browser session tokens, OpenAI API keys, or OpenAI credentials.
+- The bridge never intentionally stores passwords, cookies, browser session tokens, OpenAI API keys, or OpenAI credentials.
 - No rate-limit, quota, approval, safety mitigation, or access restriction bypassing.
 - No automatic production deploys.
 - No automatic pushes to `main`.
 - Branch-first workflow: missions work on `gcb/<missionId>`.
 - Dirty worktrees are blocked instead of stashed or overwritten.
+- The bridge instructs Codex not to read secrets.
+- The bridge blocks/reports forbidden files if they are changed in git diff.
+- The current MVP does not provide OS-level file-read prevention.
+- Users should rely on Codex sandbox/approval settings and avoid running missions on repos containing production secrets.
 
 ## Forbidden Secret Files
 
-The bridge blocks changes to common secret and credential paths by default:
+The bridge blocks/reports changes to common secret and credential paths when they appear in git diff:
 
 ```text
 .env
