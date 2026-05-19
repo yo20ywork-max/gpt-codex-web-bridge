@@ -38,6 +38,19 @@ validation: passed
 report: .gpt-codex-web-bridge/missions/<missionId>/report.md
 ```
 
+## Verification Status
+
+- Build/tests/mock-demo: Verified by `npm.cmd run build`, `npm.cmd test`, and `npm.cmd run verify:mock`.
+- Real Codex CLI mission: Verified by [`docs/REAL_CODEX_RUN_TRANSCRIPT.md`](docs/REAL_CODEX_RUN_TRANSCRIPT.md).
+- Real Codex CLI resume: Verified by [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md).
+- ChatGPT Web connector creation: Verified by [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
+- ChatGPT Web `list_missions`: Verified.
+- ChatGPT Web mock `start_mission`: Verified by mission `m_mpd37io2_033c3cbe`.
+- ChatGPT Web real Codex mission: Not yet verified.
+- ChatGPT Web `continue_mission`: Not yet verified.
+
+Full matrix: [`docs/VERIFICATION_MATRIX.md`](docs/VERIFICATION_MATRIX.md)
+
 ## Architecture
 
 ```mermaid
@@ -79,22 +92,24 @@ npm run demo:rate-limit
 
 ## Connect ChatGPT Web
 
-Start the local bridge:
+Start the local bridge in mock mode for connector verification:
 
-```bash
-npm run dev
+```powershell
+$env:GCB_MOCK_CODEX="1"
+$env:GCB_MOCK_SCENARIO="validation_fail_then_success"
+gcb.cmd serve
 ```
 
-Expose it with a tunnel:
+Expose it with an HTTPS tunnel:
 
-```bash
-npx localtunnel --port 8787
+```powershell
+ngrok http http://localhost:8787 --log=stdout
 ```
 
 Or:
 
-```bash
-npx cloudflared tunnel --url http://localhost:8787
+```powershell
+cloudflared tunnel --url http://localhost:8787 --no-autoupdate
 ```
 
 In ChatGPT Developer Mode / Apps / Connectors, add the MCP endpoint:
@@ -103,7 +118,11 @@ In ChatGPT Developer Mode / Apps / Connectors, add the MCP endpoint:
 https://your-tunnel-url.example/mcp
 ```
 
+This MVP is a No Authentication MCP connector. If ChatGPT shows `OAuth client not found`, do not use account linking; recreate the connector as No Authentication, refresh it after restarting the bridge, and verify the tools advertise `securitySchemes: [{ type: "noauth" }]`.
+
 If ChatGPT asks for tool-call approval, approve bridge tool calls only for repositories you own and intend to modify.
+
+For the full manual checklist and transcript template, see [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md) and [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt).
 
 ## ChatGPT Web Prompt
 
@@ -314,9 +333,16 @@ See:
 - [`examples/expected-report.md`](examples/expected-report.md)
 - [`examples/transcripts/mock-demo.txt`](examples/transcripts/mock-demo.txt)
 - [`examples/transcripts/rate-limit-demo.txt`](examples/transcripts/rate-limit-demo.txt)
+- [`examples/transcripts/real-codex-smoke-test.txt`](examples/transcripts/real-codex-smoke-test.txt)
+- [`examples/transcripts/real-codex-resume-test.txt`](examples/transcripts/real-codex-resume-test.txt)
+- [`examples/transcripts/chatgpt-web-connector-test.txt`](examples/transcripts/chatgpt-web-connector-test.txt)
 
 ## Project Docs
 
+- [`docs/VERIFICATION_MATRIX.md`](docs/VERIFICATION_MATRIX.md)
+- [`docs/REAL_CODEX_RUN_TRANSCRIPT.md`](docs/REAL_CODEX_RUN_TRANSCRIPT.md)
+- [`docs/REAL_CODEX_RESUME_TRANSCRIPT.md`](docs/REAL_CODEX_RESUME_TRANSCRIPT.md)
+- [`docs/CHATGPT_WEB_RUN_TRANSCRIPT.md`](docs/CHATGPT_WEB_RUN_TRANSCRIPT.md)
 - [`docs/REAL_CODEX_SMOKE_TEST.md`](docs/REAL_CODEX_SMOKE_TEST.md)
 - [`docs/CHATGPT_WEB_CONNECTION_TEST.md`](docs/CHATGPT_WEB_CONNECTION_TEST.md)
 - [`docs/MCP_INSPECTOR_TEST.md`](docs/MCP_INSPECTOR_TEST.md)

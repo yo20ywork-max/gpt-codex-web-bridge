@@ -16,6 +16,12 @@ Verify the binary is available:
 codex --version
 ```
 
+If a local app alias is not executable in your shell, the bridge can fall back to the npm package:
+
+```bash
+npx -y @openai/codex --version
+```
+
 Log in using the flow supported by your Codex CLI build:
 
 ```bash
@@ -135,6 +141,8 @@ Actual quota/rate-limit resume can only be verified when Codex CLI returns a rea
 
 ## 9. What Is Mock-Tested vs Real-Tested
 
+A completed real run is committed in [`REAL_CODEX_RUN_TRANSCRIPT.md`](REAL_CODEX_RUN_TRANSCRIPT.md). That transcript verifies one real Codex CLI mission that modified a target repo branch and passed validation.
+
 Mock-tested by CI:
 
 - mission creation
@@ -146,13 +154,16 @@ Mock-tested by CI:
 - report generation
 - safety path checks
 
-Real-tested only after following this guide:
+Real-tested by the committed transcript, or by following this guide in your own environment:
 
 - your Codex CLI installation
 - your Codex CLI login/session
 - real `codex exec` behavior
-- real `codex exec resume --last` behavior
 - real Codex modifications to a target repo
+
+Still documented-only until a dedicated successful resume transcript is committed:
+
+- real `codex exec resume --last` behavior with a task-producing diff
 
 Not claimed as verified unless you provide a reproducible transcript or screenshot path:
 

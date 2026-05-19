@@ -49,6 +49,7 @@ export class MissionService {
       allowEnvRead: validated.allowEnvRead,
       autoContinue: validated.autoContinue,
       hasCodexRun: false,
+      verificationPauseConsumed: false,
       lastGoodCommit: await getHeadCommit(repoRoot),
       lastValidation: { status: "not_run" },
       nextAction: "Preparing mission branch."

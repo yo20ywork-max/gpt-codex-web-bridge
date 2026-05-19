@@ -24,7 +24,9 @@
     "test:watch": "vitest",
     "doctor": "tsx src/cli.ts doctor",
     "mock-demo": "cross-env GCB_MOCK_CODEX=1 GCB_MOCK_SCENARIO=validation_fail_then_success tsx src/cli.ts mock-demo",
-    "demo:rate-limit": "tsx src/cli.ts demo-rate-limit"
+    "demo:rate-limit": "tsx src/cli.ts demo-rate-limit",
+    "create:chatgpt-mock-target": "powershell -ExecutionPolicy Bypass -File scripts/create-chatgpt-web-mock-target.ps1",
+    "verify:mock": "npm run build && npm test && npm run mock-demo && npm run demo:rate-limit"
   },
   "keywords": [
     "codex",

@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { commandExists, runCommandToLog } from "./processUtils.js";
 import { getStorageRoot } from "./paths.js";
 import { MissionService } from "./missionService.js";
@@ -104,7 +104,7 @@ async function doctor(): Promise<Record<string, unknown>> {
     },
     codex: {
       available: await commandExists("codex"),
-      fallback: "npx -y codex"
+      fallback: "npx -y @openai/codex"
     },
     storage: {
       path: storageRoot,
@@ -330,8 +330,20 @@ function printHelp(): void {
   gcb demo-rate-limit`);
 }
 
-const entry = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
-if (import.meta.url === entry) {
+async function isEntryPoint(): Promise<boolean> {
+  if (!process.argv[1]) {
+    return false;
+  }
+  const modulePath = fileURLToPath(import.meta.url);
+  const argvPath = path.resolve(process.argv[1]);
+  const [realModulePath, realArgvPath] = await Promise.all([
+    fs.promises.realpath(modulePath).catch(() => modulePath),
+    fs.promises.realpath(argvPath).catch(() => argvPath)
+  ]);
+  return path.resolve(realModulePath).toLowerCase() === path.resolve(realArgvPath).toLowerCase();
+}
+
+if (await isEntryPoint()) {
   main().catch((error) => {
     console.error(error instanceof Error ? error.message : error);
     process.exit(1);

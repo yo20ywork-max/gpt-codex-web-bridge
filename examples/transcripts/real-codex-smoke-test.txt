@@ -1,0 +1,152 @@
+Real Codex CLI smoke test transcript.
+
+Date: 2026-05-20 Asia/Taipei
+Shell: Windows PowerShell
+Bridge repo: C:\gpt-codex-web-bridge
+Target repo: C:\tmp\gcb-real-codex-target
+Mission: m_mpcvo0l4_e4a2d4e1
+Codex CLI: codex-cli 0.131.0 via npx -y @openai/codex
+
+> npm.cmd run build
+
+> gpt-codex-web-bridge@0.1.0 build
+> tsc
+
+> npm.cmd link
+
+added 1 package, and audited 3 packages in 227ms
+found 0 vulnerabilities
+
+> gcb.cmd doctor
+
+{
+  "node": {
+    "version": "v24.14.1",
+    "ok": true
+  },
+  "git": {
+    "available": true
+  },
+  "codex": {
+    "available": true,
+    "fallback": "npx -y @openai/codex"
+  },
+  "storage": {
+    "path": "C:\\gpt-codex-web-bridge\\.gpt-codex-web-bridge",
+    "writable": true
+  },
+  "mcp": {
+    "endpoint": "http://localhost:8787/mcp"
+  }
+}
+
+> npx.cmd -y @openai/codex --version
+
+codex-cli 0.131.0
+
+> gcb.cmd start --repo /tmp/gcb-real-codex-target --goal "Add a subtract(a, b) function to src/add.ts, add tests for it, run npm test, and stop when validation passes." --test "npm test"
+
+{
+  "missionId": "m_mpcvo0l4_e4a2d4e1",
+  "goal": "Add a subtract(a, b) function to src/add.ts, add tests for it, run npm test, and stop when validation passes.",
+  "repoPath": "C:\\tmp\\gcb-real-codex-target",
+  "branch": "gcb/m_mpcvo0l4_e4a2d4e1",
+  "status": "queued",
+  "currentLoop": 0,
+  "maxLoops": 12,
+  "nextAction": "Worker queued.",
+  "workerStarted": true
+}
+
+> gcb.cmd status
+
+{
+  "missionId": "m_mpcvo0l4_e4a2d4e1",
+  "status": "completed",
+  "branch": "gcb/m_mpcvo0l4_e4a2d4e1",
+  "currentLoop": 1,
+  "maxLoops": 12,
+  "lastValidation": {
+    "status": "passed",
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "All validation commands passed."
+  },
+  "running": false
+}
+
+> gcb.cmd report
+
+# Mission Report: m_mpcvo0l4_e4a2d4e1
+
+- Mission ID: m_mpcvo0l4_e4a2d4e1
+- Goal: Add a subtract(a, b) function to src/add.ts, add tests for it, run npm test, and stop when validation passes.
+- Repo: C:\tmp\gcb-real-codex-target
+- Branch: gcb/m_mpcvo0l4_e4a2d4e1
+- Status: completed
+- Loop count: 1/12
+
+Validation: passed, command `npm test`, exit code 0.
+Changed files:
+- src/add.ts
+- tests/add.test.ts
+
+Risk flags: None.
+Dependency changes: None.
+Forbidden file check: Passed.
+
+> cd C:\tmp\gcb-real-codex-target
+> git status
+
+On branch gcb/m_mpcvo0l4_e4a2d4e1
+Changes not staged for commit:
+	modified:   src/add.ts
+	modified:   tests/add.test.ts
+
+> git diff
+
+diff --git a/src/add.ts b/src/add.ts
+index b758642..9aeef09 100644
+--- a/src/add.ts
++++ b/src/add.ts
+@@ -1,3 +1,7 @@
+ export function add(a: number, b: number): number {
+   return a + b;
+ }
++
++export function subtract(a: number, b: number): number {
++  return a - b;
++}
+diff --git a/tests/add.test.ts b/tests/add.test.ts
+index 96a9052..8cc7b19 100644
+--- a/tests/add.test.ts
++++ b/tests/add.test.ts
+@@ -1,8 +1,14 @@
+ import { describe, expect, it } from "vitest";
+-import { add } from "../src/add";
++import { add, subtract } from "../src/add";
+
+describe("add", () => {
+   it("adds two numbers", () => {
+     expect(add(2, 3)).toBe(5);
+   });
+ });
++
++describe("subtract", () => {
++  it("subtracts the second number from the first", () => {
++    expect(subtract(5, 3)).toBe(2);
++  });
++});
+
+> npm.cmd test
+
+> gcb-real-codex-target@1.0.0 test
+> vitest run
+
+ RUN  v4.1.6 C:/tmp/gcb-real-codex-target
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+
+Verdict: pass for real Codex CLI mission.
+Real ChatGPT Web connector verification remains documented-only.

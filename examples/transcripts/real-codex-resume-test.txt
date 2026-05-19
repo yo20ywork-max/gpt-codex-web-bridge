@@ -1,0 +1,151 @@
+Real Codex CLI resume verification transcript.
+
+Date: 2026-05-20 Asia/Taipei
+Shell: Windows PowerShell
+Bridge repo: C:\gpt-codex-web-bridge
+Target repo: C:\tmp\gcb-real-codex-resume-target
+Mission: m_mpcyib0h_f6988e4a
+
+> npm.cmd run build
+
+> gpt-codex-web-bridge@0.1.0 build
+> tsc
+
+> npm.cmd link
+
+up to date, audited 3 packages in 404ms
+found 0 vulnerabilities
+
+> git add .gitignore package.json package-lock.json src/add.ts tests/add.test.ts
+> git status --short
+
+A  .gitignore
+A  package-lock.json
+A  package.json
+A  src/add.ts
+A  tests/add.test.ts
+
+> git commit -m "initial resume target"
+
+[master (root-commit) b0702be] initial resume target
+ 5 files changed, 1339 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 package-lock.json
+ create mode 100644 package.json
+ create mode 100644 src/add.ts
+ create mode 100644 tests/add.test.ts
+
+> npm.cmd test
+
+> gcb-real-codex-resume-target@1.0.0 test
+> vitest run
+
+ RUN  v4.1.6 C:/tmp/gcb-real-codex-resume-target
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+
+> gcb.cmd start --repo C:\tmp\gcb-real-codex-resume-target --goal "Add a multiply(a, b) function to src/add.ts, add tests for it, run npm test, and stop when validation passes." --test "npm.cmd test"
+
+{
+  "missionId": "m_mpcyib0h_f6988e4a",
+  "repoPath": "C:\\tmp\\gcb-real-codex-resume-target",
+  "branch": "gcb/m_mpcyib0h_f6988e4a",
+  "status": "queued",
+  "currentLoop": 0,
+  "maxLoops": 12,
+  "workerStarted": true
+}
+
+> gcb.cmd status m_mpcyib0h_f6988e4a
+
+{
+  "missionId": "m_mpcyib0h_f6988e4a",
+  "status": "paused",
+  "currentLoop": 1,
+  "pauseReason": "verification_pause_after_codex",
+  "lastValidation": {
+    "status": "not_run"
+  }
+}
+
+State evidence:
+hasCodexRun = true
+verificationPauseConsumed = true
+codexSessionId = 019e4176-2d4b-7240-90a2-8300b7a89e41
+
+> gcb.cmd continue
+
+{
+  "missionId": "m_mpcyib0h_f6988e4a",
+  "status": "queued",
+  "currentLoop": 1,
+  "nextAction": "Worker queued for resume.",
+  "workerStarted": true
+}
+
+> gcb.cmd status
+
+{
+  "missionId": "m_mpcyib0h_f6988e4a",
+  "status": "completed",
+  "currentLoop": 2,
+  "lastValidation": {
+    "status": "passed",
+    "command": "npm.cmd test",
+    "exitCode": 0,
+    "summary": "All validation commands passed."
+  }
+}
+
+> git diff
+
+diff --git a/src/add.ts b/src/add.ts
+index b758642..1dffd02 100644
+--- a/src/add.ts
++++ b/src/add.ts
+@@ -1,3 +1,7 @@
+ export function add(a: number, b: number): number {
+   return a + b;
+ }
++
++export function multiply(a: number, b: number): number {
++  return a * b;
++}
+diff --git a/tests/add.test.ts b/tests/add.test.ts
+index 96a9052..90f54a7 100644
+--- a/tests/add.test.ts
++++ b/tests/add.test.ts
+@@ -1,8 +1,14 @@
+ import { describe, expect, it } from "vitest";
+-import { add } from "../src/add";
++import { add, multiply } from "../src/add";
+
+describe("add", () => {
+   it("adds two numbers", () => {
+     expect(add(2, 3)).toBe(5);
+   });
+ });
++
++describe("multiply", () => {
++  it("multiplies two numbers", () => {
++    expect(multiply(2, 3)).toBe(6);
++  });
++});
+
+> npm.cmd test
+
+> gcb-real-codex-resume-target@1.0.0 test
+> vitest run
+
+ RUN  v4.1.6 C:/tmp/gcb-real-codex-resume-target
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+
+> Select-String -Path .gpt-codex-web-bridge\missions\m_mpcyib0h_f6988e4a\codex\*-combined.log -Pattern "\[gcb\] argv:|exec resume"
+
+C:\gpt-codex-web-bridge\.gpt-codex-web-bridge\missions\m_mpcyib0h_f6988e4a\codex\1779214723975-1-combined.log:1: [gcb] argv: codex exec <prompt>
+C:\gpt-codex-web-bridge\.gpt-codex-web-bridge\missions\m_mpcyib0h_f6988e4a\codex\1779215096476-1-combined.log:1: [gcb] argv: codex exec resume 019e4176-2d4b-7240-90a2-8300b7a89e41 <prompt>
+
+Verdict: verified. Real Codex CLI resume through gcb continue passed.

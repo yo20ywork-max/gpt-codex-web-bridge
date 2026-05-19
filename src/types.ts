@@ -39,6 +39,7 @@ export interface MissionState {
   allowEnvRead: boolean;
   autoContinue: boolean;
   hasCodexRun: boolean;
+  verificationPauseConsumed?: boolean;
   codexSessionId?: string;
   lastGoodCommit?: string;
   lastCodexOutputPath?: string;

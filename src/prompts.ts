@@ -6,7 +6,7 @@ const safetyGuard = new SafetyGuard();
 export function createInitialCodexPrompt(state: MissionState): string {
   const validation = validationText(state);
   return [
-    `You are Codex executing Mission ${state.missionId}.`,
+    `You are Codex executing Mission ${state.missionId}. Mission goal: ${state.goal}`,
     "",
     `Mission goal: ${state.goal}`,
     `Repository path: ${state.repoPath}`,
@@ -30,7 +30,7 @@ export function createInitialCodexPrompt(state: MissionState): string {
 
 export function createRepairPrompt(state: MissionState, validationLog: string, gitDiffSummary: string): string {
   return [
-    `You are Codex repairing Mission ${state.missionId}.`,
+    `You are Codex repairing Mission ${state.missionId}. Mission goal: ${state.goal}`,
     "",
     `Previous goal: ${state.goal}`,
     `Repository path: ${state.repoPath}`,
@@ -64,7 +64,7 @@ export function createResumePrompt(
     .join("\n");
 
   return [
-    `You are resuming Mission ${state.missionId}.`,
+    `You are resuming Mission ${state.missionId}. Mission goal: ${state.goal}`,
     "",
     `Mission goal: ${state.goal}`,
     `Repository path: ${state.repoPath}`,
